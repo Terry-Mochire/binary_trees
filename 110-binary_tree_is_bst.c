@@ -1,51 +1,70 @@
 #include "binary_trees.h"
+#include <stdio.h>
 
 /**
- * bst_insert - inserts a value in a Binary Search Tree
- * @tree: double pointer to the root node of the BST to insert the value
- * @value: value to store in the node to be inserted
+ * greater_than - check if all values in the tree are greater than a value
+ * @tree: pointer to the tree to check
+ * @val: value to check against
  *
- * Description: If the address stored in tree is NULL, the created node must
- * become the root node. If the value is already present in the tree, it must
- * be ignored
- *
- * Return: a pointer to the created node, or NULL on failure
+ * Return: 1 if true, 0 if false
  */
-bst_t *bst_insert(bst_t **tree, int value)
+int greater_than(const binary_tree_t *tree, int val)
 {
-	bst_t *tmp;
+	int l, r;
 
-	if (tree)
+	if (tree == NULL)
+		return (1);
+	if (tree->n > val)
 	{
-		if (*tree == NULL)
-		{
-			*tree = (bst_t *)binary_tree_node(NULL, value);
-			return (*tree);
-		}
-		tmp = *tree;
-		while (tmp)
-		{
-			if (tmp->n == value)
-				break;
-			if (tmp->n > value)
-			{
-				if (!tmp->left)
-				{
-					tmp->left = (bst_t *)binary_tree_node(tmp, value);
-					return (tmp->left);
-				}
-				tmp = tmp->left;
-			}
-			else if (tmp->n < value)
-			{
-				if (!tmp->right)
-				{
-					tmp->right = (bst_t *)binary_tree_node(tmp, value);
-					return (tmp->right);
-				}
-				tmp = tmp->right;
-			}
-		}
+		l = greater_than(tree->left, val);
+		r = greater_than(tree->right, val);
+		if (l && r)
+			return (1);
 	}
-	return (NULL);
+	return (0);
+}
+
+/**
+ * less_than - check if all values in the tree are less than a specific value
+ * @tree: pointer to the tree to check
+ * @val: value to check against
+ *
+ * Return: 1 if true, 0 if false
+ */
+int less_than(const binary_tree_t *tree, int val)
+{
+	int l, r;
+
+	if (tree == NULL)
+		return (1);
+	if (tree->n < val)
+	{
+		l = less_than(tree->left, val);
+		r = less_than(tree->right, val);
+		if (l && r)
+			return (1);
+	}
+	return (0);
+}
+
+/**
+ * binary_tree_is_bst - checks if a binary tree is a valid binary search tree
+ * @tree: pointer to the root node of the tree to check
+ *
+ * Return: 1 if tree is a valid BST, and 0 otherwise. If tree is NULL, return 0
+ */
+int binary_tree_is_bst(const binary_tree_t *tree)
+{
+	if (tree == NULL)
+		return (0);
+	if (less_than(tree->left, tree->n) && greater_than(tree->right, tree->n))
+	{
+		if (!tree->left || binary_tree_is_bst(tree->left))
+		{
+			if (!tree->right || binary_tree_is_bst(tree->right))
+				return (1);
+		}
+
+	}
+	return (0);
 }
